@@ -1,0 +1,32 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies including Vulkan
+RUN apt-get update && apt-get install -y \
+    libsndfile1 \
+    ca-certificates \
+    vulkan-tools \
+    libvulkan1 \
+    mesa-vulkan-drivers \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements_onnx.txt ./
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements_onnx.txt
+
+# Download ONNX model from HuggingFace at build time
+# Model: https://huggingface.co/onnx-community/kyutai-mimi-ONNX
+RUN hf download onnx-community/kyutai-mimi-ONNX \
+    --local-dir /app/onnx_model
+
+# Copy server code
+COPY server_onnx.py ./
+
+# Expose port
+EXPOSE 6543
+
+# Run server
+CMD ["python", "server_onnx.py"]

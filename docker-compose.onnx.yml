@@ -1,0 +1,31 @@
+services:
+  mimi-codec-onnx:
+    build:
+      context: .
+      dockerfile: Dockerfile.onnx
+    image: mimi-codec-onnx:latest
+    container_name: mimi-codec-onnx
+    ports:
+      - "6543:6543"
+    environment:
+      # ONNX model is inside the Docker image at /app/onnx_model
+      - MIMI_ONNX_MODEL_PATH=/app/onnx_model
+      # Server settings
+      - HOST=0.0.0.0
+      - PORT=6543
+      # Use FP16 models to save ~50% RAM (true/false)
+      # Note: FP16 models have compatibility issues with ONNX Runtime, using FP32
+      - USE_ONNX_FP16=false
+    restart: unless-stopped
+    # GPU device access for Vulkan
+    devices:
+      - /dev/dri:/dev/dri  # GPU access
+    # Vulkan ICD config
+    volumes:
+      - /usr/share/vulkan/icd.d:/usr/share/vulkan/icd.d:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:6543/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s

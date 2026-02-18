@@ -1,0 +1,18 @@
+# ONNX Runtime dependencies for Mimi audio codec
+onnxruntime>=1.16.0
+numpy>=1.24.0
+
+# Audio I/O
+soundfile>=0.12.0
+scipy>=1.10.0
+
+# Server dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# HuggingFace CLI for downloading ONNX models
+huggingface-hub[cli]>=0.20.0
+
+# Client dependencies
+requests>=2.31.0
