@@ -1,0 +1,22 @@
+services:
+  mimi-codec-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mimi-codec-server:latest
+    container_name: mimi-codec
+    ports:
+      - "6542:6542"
+    environment:
+      # Model is inside the Docker image at /app/model
+      - MIMI_MODEL_PATH=/app/model
+      # Server settings
+      - HOST=0.0.0.0
+      - PORT=6542
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:6542/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
